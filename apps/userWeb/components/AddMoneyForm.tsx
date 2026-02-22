@@ -1,5 +1,6 @@
-// packages/ui/src/components/AddMoneyForm.tsx
 "use client";
+import { BANKS } from "lib/banks";
+import { createOnRampTransaction } from "../lib/actions/createOnrampTransaction";
 import React, { useEffect, useState } from "react";
 import { Input } from "@repo/ui/Input";
 import { Select } from "@repo/ui/Select";
@@ -18,9 +19,36 @@ export const AddMoneyForm: React.FC<{
   useEffect(() => setLocalAmount(amount), [amount]);
   useEffect(() => setLocalBank(bank ?? banks[0] ?? ""), [bank, banks]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) onSubmit({ amount: localAmount, bank: localBank });
+
+    if (!localAmount || !localBank) {
+      alert("Please enter amount and select bank");
+      return;
+    }
+
+    try {
+      const result = await createOnRampTransaction({
+        amount: parseFloat(localAmount),
+        provider: localBank,
+      });
+
+      if (!result.success) {
+        alert(result.error);
+        return;
+      }
+
+      if (onSubmit) onSubmit({ amount: localAmount, bank: localBank });
+
+      if (!result.success || !result.redirectUrl) {
+        alert(result.error ?? "Something went wrong");
+        return;
+      }
+      window.location.href = result.redirectUrl;
+    } catch (error) {
+      console.error("Failed to create transaction:", error);
+      alert("Failed to create transaction. Please try again.");
+    }
   };
 
   return (

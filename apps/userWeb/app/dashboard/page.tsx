@@ -7,6 +7,7 @@ import { auth } from "../../lib/auth";
 import { prisma } from "@repo/database";
 import { redirect } from "next/navigation";
 import { AddMoneyForm } from "../../components/AddMoneyForm";
+import { BANKS } from "../../lib/banks";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -44,7 +45,7 @@ export default async function DashboardPage() {
     <div className="grid grid-cols-3 gap-6">
       <div className="col-span-2">
         <Card title="Add Money">
-          <AddMoneyForm banks={["HDFC Bank"]} />
+          <AddMoneyForm banks={Object.keys(BANKS)} />
         </Card>
       </div>
 

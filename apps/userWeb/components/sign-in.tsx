@@ -75,7 +75,7 @@ export function SignIn() {
 
       <div className="text-sm text-center mt-4 text-gray-500">
         Don't have an account?{" "}
-        <a href="/signup" className="text-indigo-600 hover:underline">
+        <a href="/app/signup" className="text-indigo-600 hover:underline">
           Create account
         </a>
       </div>

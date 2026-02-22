@@ -2,9 +2,6 @@
 import React from "react";
 import { Sidebar } from "@repo/ui/SideBar";
 import NavbarClient from "./NavbarClient";
-import { AddMoneyForm } from "../components/AddMoneyForm";
-import { BalanceCard } from "@repo/ui/BalanceCard";
-import { TransactionsList } from "@repo/ui/TransactionsList";
 
 export default function AuthenticatedShell({
   session,
