@@ -47,16 +47,16 @@ export async function createOnRampTransaction({
     const token = crypto.randomUUID(); // ideally should come from bank's API when creating a transaction
 
     const transaction = await prisma.$transaction(async (tx) => {
-      const existingTxn = await tx.onRampTransaction.findFirst({
-        where: {
-          userId,
-          status: "Processing",
-        },
-      });
+      // const existingTxn = await tx.onRampTransaction.findFirst({
+      //   where: {
+      //     userId,
+      //     status: "Processing",
+      //   },
+      // });
 
-      if (existingTxn) {
-        throw new Error("Previous transaction still processing");
-      }
+      // if (existingTxn) {
+      //   throw new Error("Previous transaction still processing");
+      // }
 
       return tx.onRampTransaction.create({
         data: {

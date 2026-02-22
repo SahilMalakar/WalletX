@@ -13,16 +13,17 @@ console.log("DATABASE_URL:", process.env.DATABASE_URL);
 // });
 
 app.post("/hdfcWebhook", async (req, res) => {
-  //TODO: add zod validation here
-  //check if this request came from hdfc bank ,use a webhook secrect here
-
   try {
     const paymentInfo = {
       token: req.body.token,
-      userId: req.body.user_identifier,
-      amount: req.body.amount,
+      userId: Number(req.body.user_identifier),
+      amount: Number(req.body.amount),
     };
-  
+
+    if (!paymentInfo.token || !paymentInfo.userId || !paymentInfo.amount) {
+      return res.status(400).json({ message: "Invalid payload" });
+    }
+
     await prisma.$transaction([
       prisma.balance.update({
         where: {
@@ -34,7 +35,7 @@ app.post("/hdfcWebhook", async (req, res) => {
           },
         },
       }),
-  
+
       prisma.onRampTransaction.update({
         where: {
           token: paymentInfo.token,
@@ -44,17 +45,17 @@ app.post("/hdfcWebhook", async (req, res) => {
         },
       }),
     ]);
+
     res.status(200).json({
       message: "captured",
     });
   } catch (error) {
     console.error(`error in capturing: ${error}`);
-    res.status(411).json({
-      message:"error while processing webhook"
-    })
+    res.status(500).json({
+      message: "error while processing webhook",
+    });
   }
 });
-
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");
