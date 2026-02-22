@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const _nextAuth = NextAuth({
   providers: [
     Credentials({
       credentials: {
@@ -55,7 +55,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         console.log("Login success");
 
         return {
-          id: existingUser.id,
+          id: String(existingUser.id),
           name: existingUser.name,
           email: existingUser.email,
         };
@@ -72,16 +72,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = String((user as any).id);
       }
       return token;
     },
 
     async session({ session, token }) {
       if (session.user && token.id) {
-        session.user.id = token.id as string;
+        session.user.id = String(token.id);
       }
       return session;
     },
   },
 });
+
+export const handlers = (_nextAuth as any).handlers;
+export const signIn = (_nextAuth as any).signIn;
+export const signOut = (_nextAuth as any).signOut;
+export const auth = (_nextAuth as any).auth;

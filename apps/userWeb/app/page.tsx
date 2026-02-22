@@ -1,7 +1,13 @@
-function page() {
-  return (
-    <div>hi there</div>
-  )
-}
+// apps/userWeb/app/page.tsx
+import { auth } from "../lib/auth";
+import { redirect } from "next/navigation";
 
-export default page
+export default async function Page() {
+  const session = await auth();
+
+  if (session?.user) {
+    redirect("/dashboard");
+  }
+
+  redirect("/app/signin");
+}

@@ -1,38 +1,106 @@
+// apps/userWeb/components/SignUp.tsx
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Card } from "@repo/ui/Card";
+import { Input } from "@repo/ui/Input";
+import { Button } from "@repo/ui/Button";
 import { registerUser } from "../lib/userAuth.server";
-import { redirect } from "next/navigation";
 
 export function SignUp() {
-  return (
-    <form
-      action={async (formData: FormData) => {
-        "use server";
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
-        const name = formData.get("name") as string;
-        const email = formData.get("email") as string;
-        const phoneNumber = formData.get("phoneNumber") as string;
-        const password = formData.get("password") as string;
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
 
-        await registerUser({
-          name,
-          email,
-          phoneNumber,
-          password,
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const name = String(formData.get("name") ?? "");
+    const email = String(formData.get("email") ?? "");
+    const phoneNumber = String(formData.get("phoneNumber") ?? "");
+    const password = String(formData.get("password") ?? "");
+
+    if (!email || !phoneNumber || !password) {
+      setError("Required fields missing");
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, phoneNumber, password }),
         });
 
-        redirect("/signin");
-      }}
-      className="flex flex-col gap-4 max-w-sm"
-    >
-      <input name="name" placeholder="Name" className="border p-2" />
-      <input name="email" placeholder="Email" required className="border p-2" />
-      <input
-        name="phoneNumber"
-        placeholder="Phone"
-        required
-        className="border p-2"
-      />
-      <input name="password" type="password" required className="border p-2" />
-      <button className="bg-black text-white p-2 rounded">Sign Up</button>
-    </form>
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data?.message ?? "Registration failed");
+
+        router.push("/signin");
+      } catch (err: any) {
+        setError(err?.message ?? "Something went wrong");
+      }
+    });
+  }
+
+  return (
+    <Card className="w-full">
+      <h2 className="text-2xl font-semibold mb-6 text-center">
+        Create Account
+      </h2>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div>
+          <label className="text-sm font-medium">Name</label>
+          <Input name="name" className="ui:w-full ui:border ui:border-gray-200 ui:text-gray-900 ui:placeholder-gray-400" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Email</label>
+          <Input
+            name="email"
+            type="email"
+            required
+            className="ui:w-full ui:border ui:border-gray-200 ui:text-gray-900 ui:placeholder-gray-400"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Phone Number</label>
+          <Input
+            name="phoneNumber"
+            required
+            className="ui:w-full ui:border ui:border-gray-200 ui:text-gray-900 ui:placeholder-gray-400"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Password</label>
+          <Input
+            name="password"
+            type="password"
+            required
+            className="ui:w-full ui:border ui:border-gray-200 ui:text-gray-900 ui:placeholder-gray-400"
+          />
+        </div>
+
+        {error && <div className="text-sm text-red-500">{error}</div>}
+
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? "Creating..." : "Sign Up"}
+        </Button>
+      </form>
+
+      <div className="text-sm text-center mt-4 text-gray-500">
+        Already have an account?{" "}
+        <a href="/signin" className="text-indigo-600 hover:underline">
+          Sign in
+        </a>
+      </div>
+    </Card>
   );
 }
