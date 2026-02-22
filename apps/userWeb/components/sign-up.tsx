@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Card } from "@repo/ui/Card";
 import { Input } from "@repo/ui/Input";
 import { Button } from "@repo/ui/Button";
-import { registerUser } from "../lib/userAuth.server";
 
 export function SignUp() {
   const router = useRouter();

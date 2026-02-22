@@ -7,6 +7,8 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    // Use `pnpm exec` so the `tsx` binary is resolved in pnpm workspaces
+    seed: "pnpm exec tsx prisma/seed.ts",
   },
   datasource: {
     url: process.env["DATABASE_URL"],

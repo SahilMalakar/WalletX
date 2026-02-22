@@ -2,10 +2,9 @@ import "@repo/ui/styles.css"; // <--- includes ui: prefixed tailwind output
 import "./globals.css"; // your app-specific styles (no ui: prefix)
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { Sidebar } from "@repo/ui/SideBar";
-import NavbarClient from "../components/NavbarClient";
+import SessionProviderClient from "../components/SessionProviderClient";
+import AuthenticatedShell from "../components/AuthenticatedShell";
 import { auth } from "../lib/auth";
-import { redirect } from "next/navigation";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -27,19 +26,13 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`flex min-h-screen bg-gray-100 ${geist.className}`}>
         {isAuthenticated ? (
-          <>
-            <aside className="w-72">
-              <Sidebar />
-            </aside>
-
-            <div className="flex-1 flex flex-col">
-              <header className="sticky top-0 z-10">
-                <NavbarClient />
-              </header>
-
-              <main className="p-8">{children}</main>
-            </div>
-          </>
+          // Wrap the whole authenticated UI in SessionProviderClient so any
+          // client component (navbar, sidebar, forms) can use `useSession`.
+          <SessionProviderClient session={session}>
+            <AuthenticatedShell session={session}>
+              {children}
+            </AuthenticatedShell>
+          </SessionProviderClient>
         ) : (
           // Unauthenticated: center auth pages both vertically and horizontally
           <div className="min-h-screen w-full flex items-center justify-center">
