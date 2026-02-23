@@ -3,7 +3,6 @@
 import { prisma } from "@repo/database";
 import { auth } from "../auth";
 
-
 export async function p2pTransfer(to: string, amount: number) {
   const session = await auth();
   const from = session?.user?.id;
@@ -26,7 +25,7 @@ export async function p2pTransfer(to: string, amount: number) {
 
   if (Number(from) === toUser.id) {
     return { success: false, error: "Cannot transfer to yourself" };
-    }
+  }
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -40,8 +39,8 @@ export async function p2pTransfer(to: string, amount: number) {
       const fromBalance = await tx.balance.findUnique({
         where: { userId: Number(from) },
       });
-          console.log("Balance:", fromBalance?.amount);
-          console.log("Requested:", amount);
+      console.log("Balance:", fromBalance?.amount);
+      console.log("Requested:", amount);
 
       if (!fromBalance || fromBalance.amount < amount) {
         throw new Error("Insufficient balance");
@@ -55,14 +54,18 @@ export async function p2pTransfer(to: string, amount: number) {
         },
       });
 
-      // Credit receiver
-      await tx.balance.update({
+      // Credit receiver (create balance if missing)
+      await tx.balance.upsert({
         where: { userId: toUser.id },
-        data: {
+        update: {
           amount: { increment: amount },
         },
+        create: {
+          userId: toUser.id,
+          amount: amount,
+          locked: 0,
+        },
       });
-
       // Create transfer record
       await tx.p2PTransfer.create({
         data: {
