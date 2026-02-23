@@ -1,12 +1,21 @@
 // Centralized bank configuration
 // Add new banks here — no need to change AddMoneyForm code
-// packages/config/banks.ts
-export const BANKS = {
-  HDFC: {
-    redirectUrl: "http://localhost:3001/hdfc",
+
+export const SUPPORTED_BANKS = [
+  {
+    name: "HDFC Bank",
+    redirectUrl: "https://netbanking.hdfcbank.com",
   },
-  AXIS: {
-    redirectUrl: "http://localhost:3001/axis",
+  {
+    name: "Axis Bank",
+    redirectUrl: "https://www.axisbank.com/",
   },
-};
- 
+];
+
+// Legacy export for backwards compatibility
+export const BANKS = Object.fromEntries(
+  SUPPORTED_BANKS.map((bank) => [
+    bank.name.replace(/\s+/g, "_").toUpperCase(),
+    bank,
+  ]),
+);

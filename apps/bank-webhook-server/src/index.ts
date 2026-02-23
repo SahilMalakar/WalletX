@@ -7,10 +7,14 @@ const app = express();
 app.use(express.json());
 
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
-// app.get("/", async (req, res) => {
-//   const user = await prisma.user.findFirst({});
-//   res.json({ message: "Hello World!", user });
-// });
+// TODO:
+// add zod validation for incoming payload
+
+// ideally hdfc should send a unique token for each transaction, we can use that token to idempotently update the transaction status and user balance
+
+// for now we are assuming that the token is unique and directly updating the balance and transaction status
+
+//check if this transaction is processed before using the token, if yes then return success without updating balance again
 
 app.post("/hdfcWebhook", async (req, res) => {
   try {

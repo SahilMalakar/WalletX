@@ -1,5 +1,5 @@
 "use client";
-import { BANKS } from "lib/banks";
+import { SUPPORTED_BANKS } from "../lib/banks";
 import { createOnRampTransaction } from "../lib/actions/createOnrampTransaction";
 import React, { useEffect, useState } from "react";
 import { Input } from "@repo/ui/Input";
