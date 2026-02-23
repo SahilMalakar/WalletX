@@ -14,46 +14,76 @@ datasource db {
 }
 
 model User {
-  id        Int   @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  phoneNumber String   @unique
-  password  String
-  onRampTransaction OnRampTransaction[]
-  balance           Balance[]
+  id          Int     @id @default(autoincrement())
+  email       String  @unique
+  name        String?
+  phoneNumber String  @unique
+  password    String
+
+  // 1–1 Required Balance
+  balance     Balance?
+
+  // Relations
+  onRampTransactions OnRampTransaction[]
+  sentTransfers      P2PTransfer[] @relation("FromUserRelation")
+  receivedTransfers  P2PTransfer[] @relation("ToUserRelation")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Balance {
+  // Make userId primary key to enforce strict 1–1
+  userId Int @id
+
+  amount Int @default(0)  // available balance (stored in paisa)
+  locked Int @default(0)  // reserved funds (stored in paisa)
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model P2PTransfer {
+  id         Int @id @default(autoincrement())
+
+  amount     Int      // stored in paisa
+  createdAt  DateTime @default(now())
+
+  fromUserId Int
+  fromUser   User @relation("FromUserRelation", fields: [fromUserId], references: [id])
+
+  toUserId   Int
+  toUser     User @relation("ToUserRelation", fields: [toUserId], references: [id])
+}
+
 model Merchant {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String?
-  auth_type AuthType
+  authType  AuthType
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model OnRampTransaction {
-  id        Int          @id @default(autoincrement())
-  status    OnRampStatus
-  token     String       @unique
-  provider  String
-  amount    Int
-  startTime DateTime
-  userId    Int
-  user      User         @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  id        Int           @id @default(autoincrement())
 
-model Balance {
-  id     Int  @id @default(autoincrement())
-  userId Int  @unique
-  amount Int
-  locked Int
-  user   User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status    OnRampStatus
+  token     String        @unique
+  provider  String
+
+  amount    Int           // stored in paisa
+  startedAt DateTime      @default(now())
+
+  userId    Int
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
 }
 
 enum AuthType {

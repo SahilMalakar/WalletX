@@ -1,10 +1,10 @@
-// packages/ui/src/components/TransactionsList.tsx
 import React from "react";
+import { formatINR } from "../src/formatCurrency";
 
 export type Txn = {
   id: number | string;
   provider: string;
-  amount: number;
+  amount: number; // stored in paisa
   status: string;
   createdAt: string;
 };
@@ -19,6 +19,7 @@ export const TransactionsList: React.FC<{ items?: Txn[] }> = ({
       </div>
     );
   }
+
   return (
     <ul className="ui:space-y-3">
       {items.map((it) => (
@@ -32,8 +33,9 @@ export const TransactionsList: React.FC<{ items?: Txn[] }> = ({
               {new Date(it.createdAt).toLocaleString()}
             </div>
           </div>
+
           <div className="ui:text-right">
-            <div>{it.amount} INR</div>
+            <div>{formatINR(it.amount)}</div>
             <div className="ui:text-xs ui:text-gray-500">{it.status}</div>
           </div>
         </li>

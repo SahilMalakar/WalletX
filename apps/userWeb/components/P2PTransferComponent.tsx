@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Input } from "@repo/ui/Input";
 import { Button } from "@repo/ui/Button";
+import { p2pTransfer } from "lib/actions/p2pTransfer";
 
 export const P2PTransferComponent: React.FC = () => {
   const [recipient, setRecipient] = useState("");
@@ -20,8 +21,15 @@ export const P2PTransferComponent: React.FC = () => {
     setLoading(true);
     try {
       // TODO: Implement P2P transfer logic
+      const res = await p2pTransfer(recipient, Number(amount) * 100);
+
+      if (!res.success) {
+        alert(res.error);
+        return;
+      }
       console.log("Sending to:", recipient, "Amount:", amount);
-      alert("P2P transfer feature coming soon!");
+
+      alert("P2P transfer completed successfully!");
     } catch (error) {
       console.error("P2P transfer failed:", error);
       alert("P2P transfer failed. Please try again.");

@@ -9,8 +9,8 @@ export default async function P2PTransferPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/signin");
-  }
+    redirect("/app/signin");
+  } 
 
   const userId = Number(session.user.id);
 
@@ -31,7 +31,7 @@ export default async function P2PTransferPage() {
       </div>
 
       <div className="space-y-4">
-        <BalanceCard unlocked={unlocked} locked={locked} currency="INR" />
+        <BalanceCard unlocked={unlocked} locked={locked}/>
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ export async function createOnRampTransaction({
           amount: amountInPaise,
           provider: normalizedProvider,
           status: "Processing",
-          startTime: new Date(),
+          createdAt: new Date(),
         },
       });
     });

@@ -48,7 +48,7 @@ export default async function HomePage() {
       </div>
 
       <div className="space-y-4">
-        <BalanceCard unlocked={unlocked} locked={locked} currency="INR" />
+        <BalanceCard unlocked={unlocked} locked={locked} />
         <Card title="Recent Transactions">
           <TransactionsList items={txns} />
         </Card>

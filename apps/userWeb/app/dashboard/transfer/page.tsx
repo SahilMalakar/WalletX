@@ -31,7 +31,7 @@ export default async function TransferPage() {
       </div>
 
       <div className="space-y-4">
-        <BalanceCard unlocked={unlocked} locked={locked} currency="INR" />
+        <BalanceCard unlocked={unlocked} locked={locked} />
       </div>
     </div>
   );
