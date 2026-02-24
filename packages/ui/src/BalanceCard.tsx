@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "./Card";
-import { formatINR } from "../src/formatCurrency";
+import { formatINR } from "./formatCurrency";
 
 export const BalanceCard: React.FC<{
   unlocked: number;
