@@ -10,12 +10,10 @@ coverage
 node_modules
 .pnpm-store
 .git
-.gitignore
 Dockerfile
 .next
 dist
 .env*
-docker
 # next.js
 .next/
 out/
